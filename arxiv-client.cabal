@@ -20,9 +20,10 @@ library
     import:           warnings
     exposed-modules:
         Arxiv.Entry
+      , Arxiv.Client
+      , Arxiv.Download
       , Arxiv.Query
       , Arxiv.Query.Algebraic
-      , Arxiv.Client
       , Arxiv.Filters
     hs-source-dirs:   src
     build-depends:
@@ -35,6 +36,7 @@ library
       , conduit             >=1.3
       , containers          >=0.6
       , modern-uri
+      , directory
     -- other-modules:
     -- other-extensions:
     hs-source-dirs:   src

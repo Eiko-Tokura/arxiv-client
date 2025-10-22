@@ -10,6 +10,7 @@ import Arxiv.Client
 import Arxiv.Query
 import Arxiv.Filters
 import Arxiv.Entry
+import Arxiv.Download
 import Text.Pretty.Simple
 
 fromDay :: Integer -> Int -> Int -> UTCTime
@@ -41,6 +42,7 @@ main = do
   let recent = publishedAfter (fromDay 2022 01 01) es
   putStrLn ("Recent (>=2022): " <> show (length recent))
   mapM_ pPrint recent
+  mapM_ (\en -> downloadPdfToFile en (defaultFileName ".pdf" en)) recent
 
   if null recent
     then putStrLn "No recent papers found."
