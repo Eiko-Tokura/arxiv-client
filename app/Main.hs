@@ -6,10 +6,10 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.ByteString.Lazy.Char8 as BL8
 import Data.Time (UTCTime(..), secondsToDiffTime, fromGregorian)
-import Network.Arxiv.Client
-import Network.Arxiv.Query
-import Network.Arxiv.Filters
-import Network.Arxiv.Types
+import Arxiv.Client
+import Arxiv.Query
+import Arxiv.Filters
+import Arxiv.Entry
 import Text.Pretty.Simple
 
 fromDay :: Integer -> Int -> Int -> UTCTime

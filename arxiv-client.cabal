@@ -19,10 +19,11 @@ common warnings
 library
     import:           warnings
     exposed-modules:
-        Network.Arxiv.Types
-      , Network.Arxiv.Query
-      , Network.Arxiv.Client
-      , Network.Arxiv.Filters
+        Arxiv.Entry
+      , Arxiv.Query
+      , Arxiv.Query.Algebraic
+      , Arxiv.Client
+      , Arxiv.Filters
     hs-source-dirs:   src
     build-depends:
         base                >=4.14 && <5

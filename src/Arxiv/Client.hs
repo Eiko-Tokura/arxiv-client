@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, OverloadedRecordDot #-}
 
-module Network.Arxiv.Client
+module Arxiv.Client
   ( queryArxiv
   , queryArxivIO
   , queryArxivRaw
@@ -17,8 +17,8 @@ import qualified Data.Text as T
 import qualified Data.ByteString.Lazy as LBS
 import           Data.Time (UTCTime, parseTimeM, defaultTimeLocale)
 import           Data.Time.Format.ISO8601 (iso8601ParseM)
-import           Network.Arxiv.Query
-import           Network.Arxiv.Types
+import           Arxiv.Query
+import           Arxiv.Entry
 import           Network.HTTP.Req
 import qualified Text.XML as X
 import           Text.XML.Cursor

@@ -1,4 +1,4 @@
-module Network.Arxiv.Filters
+module Arxiv.Filters
   ( publishedBetween
   , publishedAfter
   , publishedBefore
@@ -11,7 +11,7 @@ module Network.Arxiv.Filters
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time (UTCTime)
-import Network.Arxiv.Types
+import Arxiv.Entry
 
 publishedBetween :: UTCTime -> UTCTime -> [ArxivEntry] -> [ArxivEntry]
 publishedBetween a b = filter (\e -> published e >= a && published e <= b)

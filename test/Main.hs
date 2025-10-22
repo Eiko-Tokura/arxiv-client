@@ -2,8 +2,8 @@
 module Main (main) where
 
 import qualified Data.Text as T
-import Network.Arxiv.Query
-import Network.Arxiv.Client
+import Arxiv.Query
+import Arxiv.Client
 import Data.Function
 
 failWith :: String -> IO a

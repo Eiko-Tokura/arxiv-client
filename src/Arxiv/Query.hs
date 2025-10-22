@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-|
-Module      : Network.Arxiv.Query
+Module      : Arxiv.Query
 Description : A tiny, composable DSL for arXiv API search queries
-Copyright   : (c) You
+Copyright   : (c) Eiko 2025
 License     : BSD3
-Maintainer  : you@example.com
+Maintainer  : eikochanowo@outlook.com
 Stability   : experimental
 Portability : portable
 
@@ -18,7 +18,7 @@ Build queries fluently with /builders/ (functions of type 'QBuilder'):
 
 @
 import Data.Function ((&))
-import Network.Arxiv.Query
+import Arxiv.Query
 
 let q =
       emptyQuery
@@ -70,7 +70,7 @@ when you want full control.
 
 @since 0.1.0.0
 -}
-module Network.Arxiv.Query
+module Arxiv.Query
   ( -- * Sorting
     SortBy(..)
   , SortOrder(..)
@@ -137,6 +137,10 @@ module Network.Arxiv.Query
 
     -- * Rendering
   , renderSearchQuery
+
+    -- * Term type
+  , Term(..)
+  , addTerm
   ) where
 
 import Data.Text (Text)

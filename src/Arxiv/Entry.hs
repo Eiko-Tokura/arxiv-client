@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.Arxiv.Types
+module Arxiv.Entry
   ( ArxivEntry(..)
   , arxivIdNoVersion
   ) where
