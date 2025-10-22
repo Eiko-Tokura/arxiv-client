@@ -1,0 +1,73 @@
+cabal-version:      3.0
+name:               arxiv-client
+version:            0.1.0.0
+synopsis:           Tiny client for the arXiv Atom API with a simple query DSL
+-- description:
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Eiko
+maintainer:         eikochanowo@outlook.com
+-- copyright:
+category:           Data
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:
+        Network.Arxiv.Types
+      , Network.Arxiv.Query
+      , Network.Arxiv.Client
+      , Network.Arxiv.Filters
+    hs-source-dirs:   src
+    build-depends:
+        base                >=4.14 && <5
+      , text                >=2.0
+      , bytestring          >=0.10
+      , time                >=1.11
+      , req                 >=3.13
+      , xml-conduit         >=1.9
+      , conduit             >=1.3
+      , containers          >=0.6
+      , modern-uri
+    -- other-modules:
+    -- other-extensions:
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+executable arxiv-client-example
+    import:           warnings
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    build-depends:
+        base
+      , arxiv-client
+      , text
+      , bytestring
+      , time
+      , req
+      , xml-conduit
+      , conduit
+      , containers
+      , modern-uri
+      , pretty-simple
+    -- other-modules:
+    -- other-extensions:
+    default-language: GHC2021
+
+test-suite arxiv-client-test
+    import:           warnings
+    default-language: GHC2021
+    -- other-modules:
+    -- other-extensions:
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          Main.hs
+    build-depends:
+        base
+      , arxiv-client
+      , text
