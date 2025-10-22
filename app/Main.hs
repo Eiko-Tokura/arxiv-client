@@ -4,6 +4,7 @@ module Main where
 import Data.Function ((&))
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import qualified Data.ByteString.Lazy.Char8 as BL8
 import Data.Time (UTCTime(..), secondsToDiffTime, fromGregorian)
 import Network.Arxiv.Client
 import Network.Arxiv.Query
@@ -21,15 +22,17 @@ main :: IO ()
 main = do
   let q0 = emptyQuery
          & inCategory "math.NT"
-         & anyWords ["Chabauty"]
-         & setPaging 0 25
+         & titleHas "Chabauty"
+         & setPaging 0 1
          & setSort SubmittedDate Desc
 
   putStrLn "----- Query debug -----"
   T.putStrLn ("search_query = " <> renderSearchQuery q0)
   T.putStrLn ("full URL     = " <> buildRequestUrlText q0)
 
-  es <- queryArxivIO q0
+  (raw, es) <- queryArxivRawIO q0
+  putStrLn "----- Raw response -----"
+  BL8.putStrLn raw
 
   putStrLn "----- Parsed entries -----"
   putStrLn ("Total parsed: " <> show (length es))

@@ -30,7 +30,7 @@ axisLocal ln = element (nNamespace ln)
 -- Identify ourselves per arXiv guidelines.
 userAgentHeader :: Option scheme
 userAgentHeader =
-  header "User-Agent" "haskell-arxiv-client/0.1"
+  header "User-Agent" "arxiv-client/0.1"
 
 -- Build the query string for debugging (best-effort).
 buildRequestUrlText :: ArxivQuery -> Text
@@ -51,7 +51,7 @@ buildRequestUrlText q =
 -- Raw response (XML bytes) + parsed entries, for debugging.
 queryArxivRaw :: (MonadHttp m, MonadIO m) => ArxivQuery -> m (LBS.ByteString, [ArxivEntry])
 queryArxivRaw q = do
-  let baseUrl = http "export.arxiv.org" /: "api" /: "query"
+  let baseUrl = https "export.arxiv.org" /: "api" /: "query"
       mkParam name val = name =: (val :: Text)
       params =
            mkParam "search_query" (renderSearchQuery q)
@@ -60,7 +60,6 @@ queryArxivRaw q = do
         <> maybe mempty (\sb -> "sortBy"    =: sortByText sb) (qSortBy q)
         <> maybe mempty (\so -> "sortOrder" =: sortOrderText so) (qSortOrder q)
         <> (if null (qIdList q) then mempty else "id_list" =: T.intercalate "," (qIdList q))
-        <> userAgentHeader
   r <- req GET baseUrl NoReqBody lbsResponse params
   let bs = responseBody r
   pure (bs, parseFeed bs)
