@@ -51,6 +51,7 @@ executable arxiv-client-example
       , arxiv-client
       , text
       , bytestring
+      , directory
       , time
       , req
       , xml-conduit

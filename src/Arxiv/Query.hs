@@ -141,8 +141,12 @@ module Arxiv.Query
     -- * Term type
   , Term(..)
   , addTerm
+
+    -- * Helper Functions
+  , (&)
   ) where
 
+import Data.Function ((&))
 import Data.Text (Text)
 import qualified Data.Text as T
 

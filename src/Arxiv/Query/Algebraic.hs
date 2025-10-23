@@ -18,6 +18,7 @@ data QueryTerm
   | Abstract  !(IsHasAnyAll Text)
   | Author    !(IsHasAnyAll Text)
   | Category  !(IsHasAnyAll Text)
+  | AnyWhere  !(IsHasAnyAll Text)
   | Or        !QueryTerm          !QueryTerm
   | And       !QueryTerm          !QueryTerm
   | Ors       ![QueryTerm]
@@ -42,6 +43,10 @@ toTerms (Category (Is t))   = [TField "cat" t]
 toTerms (Category (Has t))  = [TField "cat" t]
 toTerms (Category (Any ts)) = [TOr  $ TField "cat" <$> ts]
 toTerms (Category (All ts)) = [TAnd $ TField "cat" <$> ts]
+toTerms (AnyWhere (Is t))   = [TField "all" t]
+toTerms (AnyWhere (Has t))  = [TField "all" t]
+toTerms (AnyWhere (Any ts)) = [TOr  $ TField "all" <$> ts]
+toTerms (AnyWhere (All ts)) = [TAnd $ TField "all" <$> ts]
 toTerms (Or t1 t2)          = [TOr (toTerms t1 ++ toTerms t2)]
 toTerms (Ors ts)            = [TOr (concatMap toTerms ts)]
 toTerms (And t1 t2)         = [TAnd (toTerms t1 ++ toTerms t2)]
