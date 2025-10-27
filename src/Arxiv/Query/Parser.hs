@@ -63,6 +63,7 @@ queryTermParser = asum
   , anywhereParser
   , fmap Ands $ string "ands" >> space >> listOf queryTermParser
   , fmap Ors  $ string "ors"  >> space >> listOf queryTermParser
+  , AnyWhere . Has <$> quotedTextParser -- without any prefix, "text" is treated as anywhere has "text"
   ]
   where
     titleParser    = string "title"    >> space1 >> Title    <$> isHasAnyAllParser
@@ -83,7 +84,7 @@ fullQueryTermParser :: Parsec Void Text QueryTerm
 fullQueryTermParser = queryTermReduction <$> andOrBracketParser 0 ('(', ')') queryTermParser
 
 parseQueryTerm :: Text -> Either (ParseErrorBundle Text Void) QueryTerm
-parseQueryTerm = runParser (queryTermParser <* eof) ""
+parseQueryTerm = runParser (fullQueryTermParser <* eof) ""
 
 queryTermTestItem :: Text -> QueryTerm -> Maybe String
 queryTermTestItem input expected =
@@ -113,6 +114,10 @@ queryTermTests =
           (Title (Has "haskell"))
           (Author (Has "simon")))
         (Abstract (Has "functional programming")))
+  , ("\"haskell\" && \"simon\"",
+      And
+        (AnyWhere (Has "haskell"))
+        (AnyWhere (Has "simon")))
   ]
 
 runQueryTermTests :: IO ()
