@@ -14,6 +14,7 @@ import Data.Time (UTCTime(..), secondsToDiffTime, fromGregorian, Day)
 import Options.Generic
 import System.Directory
 import System.FilePath ((</>))
+import System.Process (system)
 import Text.Megaparsec (errorBundlePretty)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
@@ -21,6 +22,8 @@ import qualified Data.Text.IO as T
 data ArxivCliArgs = ArxivCliArgs
   { query       :: T.Text
   , downloadPdf :: Bool
+  , downloadSrc :: Bool
+  , ungzip      :: Bool -- automatically ungzip source files (by running "tar -xzf")
   , concise     :: Bool -- concise output
   , detail      :: Bool -- detailed output
   , abstract    :: Bool -- show abstract
@@ -78,5 +81,20 @@ main = do
 
   when args.downloadPdf $ do
    createDirectoryIfMissing True directory
-   putStrLn "Downloading recent papers"
+   putStrLn "Downloading recent papers (PDF)"
    mapM_ (\en -> downloadPdfToFile en (directory </> defaultFileName ".pdf" en)) entries
+  when args.downloadSrc $ do
+   createDirectoryIfMissing True directory
+   putStrLn "Downloading recent papers (Source .tar.gz)"
+   mapM_ (\en -> downloadSourceToFile en (directory </> defaultFileName ".tar.gz" en)) entries
+   when args.ungzip $ do
+     putStrLn "Unzipping downloaded source files"
+     forM_ entries $ \en -> do
+       let filePath' = "\"" <> directory </> defaultFileName ".tar.gz" en <> "\""
+           destDir   = directory </> defaultFileName "_src" en
+           destDir'  = "\"" <> destDir <> "\""
+       createDirectoryIfMissing True destDir
+       let cmd = "tar -xzf " ++ filePath' ++ " -C " ++ destDir' ++ " && rm " ++ filePath'
+       putStrLn $ "Running: " ++ cmd
+       _ <- system cmd
+       return ()

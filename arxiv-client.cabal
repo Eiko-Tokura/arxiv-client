@@ -63,6 +63,7 @@ executable arxiv-client-cli
       , optparse-generic
       , megaparsec
       , filepath
+      , process
     default-language: GHC2021
 
 test-suite arxiv-client-test
