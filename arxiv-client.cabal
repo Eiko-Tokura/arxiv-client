@@ -42,30 +42,6 @@ library
     hs-source-dirs:   src
     default-language: GHC2021
 
-executable arxiv-client-cli
-    import:           warnings
-    main-is:          Main.hs
-    hs-source-dirs:   cli
-    build-depends:
-        base
-      , arxiv-client
-      , text
-      , bytestring
-      , directory
-      , time
-      , req
-      , xml-conduit
-      , conduit
-      , containers
-      , modern-uri
-      , pretty-simple
-      , optparse-applicative
-      , optparse-generic
-      , megaparsec
-      , filepath
-      , process
-    default-language: GHC2021
-
 test-suite arxiv-client-test
     import:           warnings
     default-language: GHC2021
