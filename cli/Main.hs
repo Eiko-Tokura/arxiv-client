@@ -9,13 +9,14 @@ import Arxiv.Query
 import Arxiv.Query.Algebraic
 import Arxiv.Query.Parser
 import Control.Monad (when, forM_, unless)
-import Data.Time (UTCTime(..), secondsToDiffTime, fromGregorian, Day)
 import Data.Maybe
+import Data.Time (UTCTime(..), secondsToDiffTime, fromGregorian, Day)
+import Options.Generic
 import System.Directory
+import System.FilePath ((</>))
+import Text.Megaparsec (errorBundlePretty)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Options.Generic
-import Text.Megaparsec (errorBundlePretty)
 
 data ArxivCliArgs = ArxivCliArgs
   { query       :: T.Text
@@ -76,8 +77,6 @@ main = do
     else putStrLn $ "Total papers found: " <> show (length entries)
 
   when args.downloadPdf $ do
-    download <- getLine
-    when (download == "y") $ do
-      createDirectoryIfMissing True directory
-      putStrLn "Downloading recent papers"
-      mapM_ (\en -> downloadPdfToFile en (directory <> defaultFileName ".pdf" en)) entries
+   createDirectoryIfMissing True directory
+   putStrLn "Downloading recent papers"
+   mapM_ (\en -> downloadPdfToFile en (directory </> defaultFileName ".pdf" en)) entries

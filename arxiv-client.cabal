@@ -39,8 +39,6 @@ library
       , megaparsec
       , modern-uri
       , directory
-    -- other-modules:
-    -- other-extensions:
     hs-source-dirs:   src
     default-language: GHC2021
 
@@ -64,15 +62,12 @@ executable arxiv-client-cli
       , optparse-applicative
       , optparse-generic
       , megaparsec
-    -- other-modules:
-    -- other-extensions:
+      , filepath
     default-language: GHC2021
 
 test-suite arxiv-client-test
     import:           warnings
     default-language: GHC2021
-    -- other-modules:
-    -- other-extensions:
     type:             exitcode-stdio-1.0
     hs-source-dirs:   test
     main-is:          Main.hs
