@@ -27,11 +27,6 @@ import qualified Text.URI as URI
 axisLocal :: Text -> Axis
 axisLocal ln = element (nNamespace ln)
 
--- Identify ourselves per arXiv guidelines.
-userAgentHeader :: Option scheme
-userAgentHeader =
-  header "User-Agent" "arxiv-client/0.1"
-
 -- Build the query string for debugging (best-effort).
 buildRequestUrlText :: ArxivQuery -> Text
 buildRequestUrlText q =
