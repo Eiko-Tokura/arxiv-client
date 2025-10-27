@@ -4,7 +4,6 @@ module Main (main) where
 import qualified Data.Text as T
 import Arxiv.Query
 import Arxiv.Client
-import Data.Function
 
 failWith :: String -> IO a
 failWith msg = ioError (userError msg)

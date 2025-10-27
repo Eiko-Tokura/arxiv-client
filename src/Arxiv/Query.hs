@@ -187,12 +187,12 @@ data Term
 
 -- | The full query configuration that the client consumes.
 data ArxivQuery = ArxivQuery
-  { qTerms     :: [Term]         -- ^ Query expression terms (top-level AND).
-  , qStart     :: !Int           -- ^ Paging start index (offset).
-  , qMax       :: !Int           -- ^ Paging size (max_results).
+  { qTerms     :: [Term]             -- ^ Query expression terms (top-level AND).
+  , qStart     :: !Int               -- ^ Paging start index (offset).
+  , qMax       :: !Int               -- ^ Paging size (max_results).
   , qSortBy    :: !(Maybe SortBy)    -- ^ Optional sort key.
   , qSortOrder :: !(Maybe SortOrder) -- ^ Optional sort direction.
-  , qIdList    :: ![Text]        -- ^ Optional @id_list@ (comma-separated).
+  , qIdList    :: ![Text]            -- ^ Optional @id_list@ (comma-separated).
   } deriving (Eq, Show)
 
 -- | An empty query with no terms, start @0@, max @50@, and no sorting.
