@@ -15,6 +15,38 @@ import Text.Megaparsec
 import Text.Megaparsec.Char
 import qualified Data.Text.IO as TIO
 
+data AndOrBracket a
+  = AndTerm     !(AndOrBracket a) !(AndOrBracket a)
+  | OrTerm      !(AndOrBracket a) !(AndOrBracket a)
+  | BracketTerm !(AndOrBracket a)
+  | SingleTerm  !a
+  deriving (Show, Eq)
+
+queryTermReduction :: AndOrBracket QueryTerm -> QueryTerm
+queryTermReduction (AndTerm t1 t2) = And (queryTermReduction t1) (queryTermReduction t2)
+queryTermReduction (OrTerm  t1 t2) = Or  (queryTermReduction t1) (queryTermReduction t2)
+queryTermReduction (BracketTerm t) = queryTermReduction t
+queryTermReduction (SingleTerm t)  = t
+
+andOrBracketParser :: Int -> (Char, Char) -> Parsec Void Text a -> Parsec Void Text (AndOrBracket a)
+andOrBracketParser !braLevel (bra, ket) termParser = asum
+  [
+    try $ (AndTerm <$> bracketTermP) <* space <* string "&&" <* space
+      <*> andOrBracketParser braLevel (bra, ket) termParser
+  , try $ (OrTerm <$> bracketTermP) <* space <* string "||" <* space
+      <*> andOrBracketParser braLevel (bra, ket) termParser
+  , bracketTermP
+  , try $ (AndTerm . SingleTerm <$> termParser) <* space <* string "&&" <* space
+      <*> andOrBracketParser braLevel (bra, ket) termParser
+  , try $ (OrTerm . SingleTerm <$> termParser) <* space <* string "||" <* space
+      <*> andOrBracketParser braLevel (bra, ket) termParser
+  , SingleTerm <$> termParser
+  ] where bracketTermP = do
+            _ <- char bra
+            term <- andOrBracketParser (braLevel + 1) (bra, ket) termParser
+            _ <- char ket
+            return (BracketTerm term)
+
 {- example:
 
 title is coleman     ---> Title (Is "coleman")
@@ -47,13 +79,16 @@ queryTermParser = asum
     quotedTextParser = pack <$> (char '"' >> manyTill anySingle (char '"'))
     listOf p         = between (char '[') (char ']') (sepBy p (char ',' >> space))
 
+fullQueryTermParser :: Parsec Void Text QueryTerm
+fullQueryTermParser = queryTermReduction <$> andOrBracketParser 0 ('(', ')') queryTermParser
+
 parseQueryTerm :: Text -> Either (ParseErrorBundle Text Void) QueryTerm
 parseQueryTerm = runParser (queryTermParser <* eof) ""
 
 queryTermTestItem :: Text -> QueryTerm -> Maybe String
 queryTermTestItem input expected =
-  case runParser (queryTermParser <* eof) "" input of
-    Left err    -> Just ("Parse error: " ++ errorBundlePretty err)
+  case runParser (fullQueryTermParser <* eof) "" input of
+    Left err     -> Just ("Parse error: " ++ errorBundlePretty err)
     Right actual ->
       if actual == expected
         then Nothing
@@ -68,6 +103,16 @@ queryTermTests =
   , ("anywhere is \"quantum mechanics\"", AnyWhere (Is "quantum mechanics"))
   , ("ands [title is \"coleman\", author has \"doe\"]", Ands [Title (Is "coleman"), Author (Has "doe")])
   , ("ors [category is \"math.NT\", category is \"math.AG\"]", Ors [Category (Is "math.NT"), Category (Is "math.AG")])
+  , ("(title has \"haskell\" && author has \"simon\")",
+      And
+        (Title (Has "haskell"))
+        (Author (Has "simon")))
+  , ("(title has \"haskell\" && author has \"simon\") || abstract has \"functional programming\"",
+      Or
+        (And
+          (Title (Has "haskell"))
+          (Author (Has "simon")))
+        (Abstract (Has "functional programming")))
   ]
 
 runQueryTermTests :: IO ()
