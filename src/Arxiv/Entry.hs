@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Arxiv.Entry
@@ -6,6 +7,7 @@ module Arxiv.Entry
   , arxivIdNoVersion
   ) where
 
+import Data.Aeson
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import qualified Data.Text as T
@@ -23,7 +25,7 @@ data ArxivEntry = ArxivEntry
   , categories    :: ![Text]     -- ^ arXiv subjects, e.g. \"math.NT\"
   , published     :: !UTCTime
   , updated       :: !UTCTime
-  } deriving (Show, Eq, Generic)
+  } deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
 -- | Drop a trailing version suffix (…vN) if present.
 arxivIdNoVersion :: Text -> Text

@@ -29,6 +29,7 @@ library
     hs-source-dirs:   src
     build-depends:
         base          >=4    && <5
+      , aeson         >=2    && <2.3
       , text          >=2.0  && <2.2
       , bytestring    >=0.10 && <0.13
       , time          >=1.11 && <1.15
