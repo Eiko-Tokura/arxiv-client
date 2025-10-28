@@ -217,7 +217,7 @@ setSort sb so q = q { qSortBy = Just sb, qSortOrder = Just so }
 quoteIfNeeded :: Text -> Text
 quoteIfNeeded t
   | "\"" `T.isPrefixOf` t && "\"" `T.isSuffixOf` t = t
-  | T.any (\c -> c == ' ' || c == ':' || c == '(' || c == ')' || c == '"') t
+  | T.any (\c -> c == ' ' || c == ':' || c == '(' || c == ')') t
       = "\"" <> t <> "\""
   | otherwise = t
 
