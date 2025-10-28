@@ -18,6 +18,7 @@ import qualified Data.Text.IO as TIO
 data AndOrBracket a
   = AndTerm     !(AndOrBracket a) !(AndOrBracket a)
   | OrTerm      !(AndOrBracket a) !(AndOrBracket a)
+  | NotTerm     !(AndOrBracket a)
   | BracketTerm !(AndOrBracket a)
   | SingleTerm  !a
   deriving (Show, Eq)
@@ -25,6 +26,7 @@ data AndOrBracket a
 queryTermReduction :: AndOrBracket QueryTerm -> QueryTerm
 queryTermReduction (AndTerm t1 t2) = And (queryTermReduction t1) (queryTermReduction t2)
 queryTermReduction (OrTerm  t1 t2) = Or  (queryTermReduction t1) (queryTermReduction t2)
+queryTermReduction (NotTerm t)     = Not (queryTermReduction t)
 queryTermReduction (BracketTerm t) = queryTermReduction t
 queryTermReduction (SingleTerm t)  = t
 
@@ -40,6 +42,7 @@ andOrBracketParser !braLevel (bra, ket) termParser = asum
       <*> andOrBracketParser braLevel (bra, ket) termParser
   , try $ (OrTerm . SingleTerm <$> termParser) <* space <* string "||" <* space
       <*> andOrBracketParser braLevel (bra, ket) termParser
+  , NotTerm <$> (string "not" >> space1 >> andOrBracketParser braLevel (bra, ket) termParser)
   , SingleTerm <$> termParser
   ] where bracketTermP = do
             _ <- char bra
@@ -118,6 +121,9 @@ queryTermTests =
       And
         (AnyWhere (Has "haskell"))
         (AnyWhere (Has "simon")))
+  , ("not (title is \"quantum\")",
+      Not
+        (Title (Is "quantum")))
   ]
 
 runQueryTermTests :: IO ()
