@@ -27,7 +27,7 @@ data ArxivEntry = ArxivEntry
   , updated       :: !UTCTime
   } deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
--- | Drop a trailing version suffix (…vN) if present.
+-- | Drop a trailing version suffix (...vN) if present.
 arxivIdNoVersion :: Text -> Text
 arxivIdNoVersion t = case T.breakOnEnd "v" t of
   (prefix, ver) | not (T.null prefix) && T.all (`elem` ['0'..'9']) ver -> T.dropEnd (T.length ver + 1) t

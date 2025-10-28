@@ -75,6 +75,9 @@ module Arxiv.Query
     SortBy(..)
   , SortOrder(..)
 
+    -- * QBuilder type
+  , QBuilder
+
     -- * Query record & basics
   , ArxivQuery(..)
   , emptyQuery
@@ -234,7 +237,7 @@ addTerm t q = q { qTerms = qTerms q <> [t] }
 
 -- Existing API (preserved) ---------------------------------------------
 
--- | Search by author: @au:&lt;author&gt;@.
+-- | Search by author: @au:<author>@.
 --
 -- Examples:
 --
@@ -245,33 +248,33 @@ addTerm t q = q { qTerms = qTerms q <> [t] }
 byAuthor :: Text -> QBuilder
 byAuthor a = addTerm (TField "au" a)
 
--- | Title contains a token: @ti:&lt;title&gt;@.
+-- | Title contains a token: @ti:<title>@.
 titleHas :: Text -> QBuilder
 titleHas t = addTerm (TField "ti" t)
 
--- | Abstract contains a token: @abs:&lt;abstract&gt;@.
+-- | Abstract contains a token: @abs:<abstract>@.
 abstractHas :: Text -> QBuilder
 abstractHas t = addTerm (TField "abs" t)
 
--- | In category: @cat:&lt;category&gt;@ (e.g. @\"math.NT\"@).
+-- | In category: @cat:<category>@ (e.g. @\"math.NT\"@).
 inCategory :: Text -> QBuilder
 inCategory c = addTerm (TField "cat" c)
 
--- | Match any of the given words across all fields (OR): @all:…@.
+-- | Match any of the given words across all fields (OR): @all:...@.
 anyWords :: [Text] -> QBuilder
 anyWords []  q = q
 anyWords ws  q = addTerm (TOr  (map TAllWord ws)) q
 
--- | Match all the given words across all fields (AND): @all:…@.
+-- | Match all the given words across all fields (AND): @all:...@.
 allWords :: [Text] -> QBuilder
 allWords []  q = q
 allWords ws  q = addTerm (TAnd (map TAllWord ws)) q
 
--- | Match an exact phrase across all fields: @all:\"…\"@.
+-- | Match an exact phrase across all fields: @all:\"...\"@.
 exactPhrase :: Text -> QBuilder
 exactPhrase p = addTerm (TAllPhrase p)
 
--- | Negate words across all fields: @-all:…@.
+-- | Negate words across all fields: @-all:...@.
 notWords :: [Text] -> QBuilder
 notWords []  q = q
 notWords ws  q = addTerm (TAnd (map (TNot . TAllWord) ws)) q
@@ -284,31 +287,31 @@ rawTerm t = addTerm (TRaw t)
 
 -- New fielded combinators ----------------------------------------------
 
--- | Title contains /any/ of these tokens: @(ti:a OR ti:b …)@.
+-- | Title contains /any/ of these tokens: @(ti:a OR ti:b ...)@.
 titleAny :: [Text] -> QBuilder
 titleAny ws = addTerm (TOr  (map (TField "ti") ws))
 
--- | Title contains /all/ of these tokens: @(ti:a AND ti:b …)@.
+-- | Title contains /all/ of these tokens: @(ti:a AND ti:b ...)@.
 titleAll :: [Text] -> QBuilder
 titleAll ws = addTerm (TAnd (map (TField "ti") ws))
 
--- | Title contains this exact phrase: @ti:\"…\"@.
+-- | Title contains this exact phrase: @ti:\"...\"@.
 titlePhrase :: Text -> QBuilder
 titlePhrase p = addTerm (TRaw ("ti:" <> "\"" <> p <> "\""))
 
--- | Title does /not/ contain any of these tokens: @-ti:a AND -ti:b …@.
+-- | Title does /not/ contain any of these tokens: @-ti:a AND -ti:b ...@.
 notInTitle :: [Text] -> QBuilder
 notInTitle ws = addTerm (TAnd (map (TNot . TField "ti") ws))
 
--- | Abstract contains /any/ of these tokens: @(abs:a OR abs:b …)@.
+-- | Abstract contains /any/ of these tokens: @(abs:a OR abs:b ...)@.
 abstractAny :: [Text] -> QBuilder
 abstractAny ws = addTerm (TOr  (map (TField "abs") ws))
 
--- | Abstract contains /all/ of these tokens: @(abs:a AND abs:b …)@.
+-- | Abstract contains /all/ of these tokens: @(abs:a AND abs:b ...)@.
 abstractAll :: [Text] -> QBuilder
 abstractAll ws = addTerm (TAnd (map (TField "abs") ws))
 
--- | Abstract contains this exact phrase: @abs:\"…\"@.
+-- | Abstract contains this exact phrase: @abs:\"...\"@.
 abstractPhrase :: Text -> QBuilder
 abstractPhrase p = addTerm (TRaw ("abs:" <> "\"" <> p <> "\""))
 
@@ -316,39 +319,39 @@ abstractPhrase p = addTerm (TRaw ("abs:" <> "\"" <> p <> "\""))
 notInAbstract :: [Text] -> QBuilder
 notInAbstract ws = addTerm (TAnd (map (TNot . TField "abs") ws))
 
--- | Author matches /any/ token: @(au:a OR au:b …)@.
+-- | Author matches /any/ token: @(au:a OR au:b ...)@.
 authorAny :: [Text] -> QBuilder
 authorAny ws = addTerm (TOr  (map (TField "au") ws))
 
--- | Author matches /all/ tokens: @(au:a AND au:b …)@.
+-- | Author matches /all/ tokens: @(au:a AND au:b ...)@.
 authorAll :: [Text] -> QBuilder
 authorAll ws = addTerm (TAnd (map (TField "au") ws))
 
--- | Author exact (quoted): @au:\"…\"@.
+-- | Author exact (quoted): @au:\"...\"@.
 authorExact :: Text -> QBuilder
 authorExact a = addTerm (TRaw ("au:" <> "\"" <> a <> "\""))
 
--- | Category is /any/ of: @(cat:a OR cat:b …)@.
+-- | Category is /any/ of: @(cat:a OR cat:b ...)@.
 categoriesAny :: [Text] -> QBuilder
 categoriesAny cs = addTerm (TOr  (map (TField "cat") cs))
 
--- | Category is /all/ of: @(cat:a AND cat:b …)@.
+-- | Category is /all/ of: @(cat:a AND cat:b ...)@.
 categoriesAll :: [Text] -> QBuilder
 categoriesAll cs = addTerm (TAnd (map (TField "cat") cs))
 
--- | Category is /not/ any of: @-cat:a AND -cat:b …@.
+-- | Category is /not/ any of: @-cat:a AND -cat:b ...@.
 notInCategories :: [Text] -> QBuilder
 notInCategories cs = addTerm (TAnd (map (TNot . TField "cat") cs))
 
--- | Comment contains a token: @co:&lt;text&gt;@.
+-- | Comment contains a token: @co:<text>@.
 commentHas :: Text -> QBuilder
 commentHas t = addTerm (TField "co" t)
 
--- | Journal reference contains a token: @jr:&lt;text&gt;@.
+-- | Journal reference contains a token: @jr:<text>@.
 journalRefHas :: Text -> QBuilder
 journalRefHas t = addTerm (TField "jr" t)
 
--- | Report number equals token (usually exact): @rn:&lt;id&gt;@.
+-- | Report number equals token (usually exact): @rn:<id>@.
 reportNumberIs :: Text -> QBuilder
 reportNumberIs rn = addTerm (TField "rn" rn)
 
@@ -370,19 +373,19 @@ infixr 2 .||   -- | OR; binds looser (like '||').
 (.||) :: QBuilder -> QBuilder -> QBuilder
 (.||) f g = groupOr  [f, g]
 
--- | Group a list of builders using AND: @(A AND B AND …)@.
+-- | Group a list of builders using AND: @(A AND B AND ...)@.
 groupAnd :: [QBuilder] -> QBuilder
 groupAnd fs q0 =
   let ts = qTerms (foldl (\q f -> f q) (q0 { qTerms = [] }) fs)
   in addTerm (TAnd ts) q0
 
--- | Group a list of builders using OR: @(A OR B OR …)@.
+-- | Group a list of builders using OR: @(A OR B OR ...)@.
 groupOr :: [QBuilder] -> QBuilder
 groupOr fs q0 =
   let ts = qTerms (foldl (\q f -> f q) (q0 { qTerms = [] }) fs)
   in addTerm (TOr ts) q0
 
--- | Negate a grouped builder: @-(A AND B …)@.
+-- | Negate a grouped builder: @-(A AND B ...)@.
 --
 -- If the builder expands to multiple terms, they are AND-ed before negation.
 groupNot :: QBuilder -> QBuilder
