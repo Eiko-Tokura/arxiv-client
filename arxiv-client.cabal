@@ -2,7 +2,7 @@ cabal-version:      3.0
 name:               arxiv-client
 version:            0.1.0.0
 synopsis:           Tiny client for the arXiv Atom API with a simple query DSL
--- description:
+description:        This library provides a tiny client for the arXiv Atom API, allowing users to perform searches, retrieve metadata and download academic papers hosted on arXiv.org. It features a simple domain-specific language for constructing queries, making it easy to filter and sort results based on various criteria such as author, title, abstract, categories, and submission dates.
 license:            BSD-3-Clause
 license-file:       LICENSE
 author:             Eiko
@@ -11,6 +11,9 @@ maintainer:         eikochanowo@outlook.com
 category:           Data
 build-type:         Simple
 extra-doc-files:    CHANGELOG.md
+source-repository head
+    type: git
+    location: https://github.com/Eiko-Tokura/arxiv-client.git
 -- extra-source-files:
 
 common warnings
